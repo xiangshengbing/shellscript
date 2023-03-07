@@ -1,0 +1,17 @@
+#!/bin/bash
+VIP=192.168.122.100:80
+RIP1=192.168.122.11
+RIP2=192.168.122.12
+while :
+do
+  for ip in $RIP1 $RIP2
+   do
+     curl -s http://$ip &>/dev/null
+     if [ $? -eq 0 ];then
+               ipvsadm -Ln|grep -q $ip || ipvsadm -a -t $VIP -r $ip
+     else
+               ipvsadm -Ln|grep -q $ip && ipvsadm -d -t $VIP -r $ip
+     fi
+   done
+  sleep 1
+done
